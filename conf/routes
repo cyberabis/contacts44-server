@@ -16,4 +16,6 @@ POST	/updateProfile				controllers.Application.updateProfile()
 # Map static resources from the /public folder to the /assets URL path
 GET		/							controllers.Assets.at(path="/public", file="index.html")
 GET     /images/c44banner.png       controllers.Assets.at(path="/public", file="images/c44banner.png")
+GET     /images/c44banner2.png       controllers.Assets.at(path="/public", file="images/c44banner2.png")
+GET     /images/icon.png       controllers.Assets.at(path="/public", file="images/icon.png")
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
