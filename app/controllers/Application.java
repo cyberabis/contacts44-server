@@ -30,6 +30,14 @@ public class Application extends Controller {
 		String sessionUser = session("connected");
 		ObjectNode result = Json.newObject();
 		result.put("user", sessionUser);
+		if(sessionUser!=null) {
+			UserDao userDao = new UserDaoMongo();
+			User user = userDao.findUser(sessionUser);
+			result.put("email", user.getEmailId());
+			result.put("password", user.getPassword());
+			result.put("tags", user.getTags());
+		}
+		
 		return ok(result);
 	}
 
