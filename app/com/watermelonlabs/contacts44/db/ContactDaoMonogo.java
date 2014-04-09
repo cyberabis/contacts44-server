@@ -71,7 +71,7 @@ public class ContactDaoMonogo implements ContactDao{
 		searchQuery.put("userid", userId);	 
 		DBCursor cursor = coll.find(searchQuery);
 		List<Contact> allUserContacts = new ArrayList<Contact>();
-		if (cursor.hasNext()) {
+		while (cursor.hasNext()) {
 			BasicDBObject doc = (BasicDBObject) cursor.next();
 			Contact contact = new Contact();
 			contact.setContact(doc.getString("contact"));
