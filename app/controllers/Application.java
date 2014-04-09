@@ -1,10 +1,18 @@
 package controllers;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.watermelonlabs.contacts44.db.ContactDao;
+import com.watermelonlabs.contacts44.db.ContactDaoMonogo;
 import com.watermelonlabs.contacts44.db.UserDao;
 import com.watermelonlabs.contacts44.db.UserDaoMongo;
+import com.watermelonlabs.contacts44.model.Contact;
 import com.watermelonlabs.contacts44.model.User;
+import com.watermelonlabs.contacts44.util.TagTokenizer;
 
 import play.*;
 import play.libs.Json;
@@ -102,5 +110,100 @@ public class Application extends Controller {
 		session().clear();
 		return ok();
 	}
+	
+	
+	@BodyParser.Of(BodyParser.Json.class)
+	public static Result add() {
+		
+		String sessionUser = session("connected");
+		if(sessionUser==null){
+			return badRequest("Not logged in");
+		}
 
+		JsonNode req = request().body().asJson();
+		if (req == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			String contact = req.findPath("contact").textValue();
+			if ((contact == null) || (contact.equals(""))){
+				return ok("Nothing to save");
+			}
+			else{
+				//Save the contact
+				Contact contactObj = new Contact();
+				contactObj.setContact(contact);
+				contactObj.setUserid(sessionUser);
+				ContactDao contactDao = new ContactDaoMonogo();
+				contactDao.saveContact(contactObj);
+				return ok("Saved");
+			}
+			
+		}
+	}
+	
+	
+	public static Result search(String tags, String scope) {
+		
+		String sessionUser = session("connected");
+		if(sessionUser==null){
+			return badRequest("Not logged in");
+		}
+		
+		ArrayNode result = null;
+		if ((tags!=null)&&(!tags.equals(""))){
+			ContactDao contactDao = new ContactDaoMonogo();
+			List<String> tagList = TagTokenizer.tokenize(tags);
+			List<Contact> contacts = contactDao.searchContacts(tagList, scope, sessionUser);
+			ObjectMapper mapper = new ObjectMapper(); 
+			result = mapper.valueToTree(contacts);
+		}
+		return ok(result);
+		
+	}
+	
+	
+	public static Result myProfile(){
+		String sessionUser = session("connected");
+		if(sessionUser==null){
+			return badRequest("Not logged in");
+		}
+		else {
+			ObjectNode result = Json.newObject();
+			UserDao userDao = new UserDaoMongo();
+			User user = userDao.findUser(sessionUser);
+			result.put("userid", user.getUserId());
+			result.put("email", user.getEmailId());
+			result.put("tags", user.getTags());
+			result.put("password", user.getPassword());
+			return ok(result);
+		}
+	
+	}
+	
+	@BodyParser.Of(BodyParser.Json.class)
+	public static Result updateProfile(){
+		String sessionUser = session("connected");
+		if(sessionUser==null){
+			return badRequest("Not logged in");
+		}
+		else {
+			JsonNode req = request().body().asJson();
+			if (req == null) {
+				return badRequest("Expecting Json data");
+			} else {
+				String email = req.findPath("email").textValue();
+				String tags = req.findPath("tags").textValue();
+				String password = req.findPath("password").textValue();
+				User user = new User();
+				user.setUserId(sessionUser);
+				user.setTags(tags);
+				user.setEmailId(email);
+				user.setPassword(password);
+				UserDao userDao = new UserDaoMongo();
+				userDao.updateUser(user);
+				return ok();
+			}
+		}
+	}
+	
 }

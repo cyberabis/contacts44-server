@@ -7,9 +7,9 @@ import com.mongodb.DBObject;
 
 public class MongoUtil {
 
-	public static int getnextUniqueId(String counterName) {
+	public static long getnextUniqueId(String counterName) {
 
-		int nextUniqueId = 0;
+		long nextUniqueId = 0;
 
 		DB db = MongoConnector.connect();
 		DBCollection coll = db.getCollection("nextSequence");

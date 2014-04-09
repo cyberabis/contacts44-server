@@ -21,6 +21,7 @@ public class UserDaoMongo implements UserDao {
 			user.setUserId(doc.getString("userid"));
 			user.setPassword(doc.getString("password"));
 			user.setEmailId(doc.getString("email"));
+			user.setTags(doc.getString("tags"));
 		}		
 		return user;
 	}
@@ -54,6 +55,7 @@ public class UserDaoMongo implements UserDao {
 	private BasicDBObject createUserDocument(User user) {
 		return new BasicDBObject("userid", user.getUserId()).
                 append("password", user.getPassword()).
+                append("tags", user.getTags()).
                 append("email", user.getEmailId());
 	}
 

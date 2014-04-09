@@ -7,6 +7,10 @@ GET     /test                       controllers.Application.index()
 POST	/login						controllers.Application.login()
 GET		/logout						controllers.Application.logout()
 GET		/connectionTest				controllers.Application.connectionTest()
+POST	/add						controllers.Application.add()
+GET		/search						controllers.Application.search(tags,scope)
+GET		/myProfile					controllers.Application.myProfile()
+POST	/updateProfile				controllers.Application.updateProfile()
 
 
 # Map static resources from the /public folder to the /assets URL path
