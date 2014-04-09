@@ -61,7 +61,7 @@ public class Application extends Controller {
 			// Check if user already logged in
 			String sessionUser = session("connected");
 			if ((sessionUser != null) && (sessionUser.equals(userid))) {
-				result.put("msg", "connected");
+				result.put("msg", "already connected");
 				return ok(result);
 			} else {
 				session().clear();
@@ -84,6 +84,10 @@ public class Application extends Controller {
 						if (isUserCreated) {
 							session("connected", userid);
 							result.put("msg", "loggedin");
+							result.put("userid", user.getUserId());
+							result.put("password", user.getPassword());
+							result.put("email", user.getEmailId());
+							result.put("tags", user.getTags());
 							return ok(result);
 						} else
 							return unauthorized("could not create user");
@@ -96,6 +100,10 @@ public class Application extends Controller {
 						// Set cookie
 						session("connected", userid);
 						result.put("msg", "loggedin");
+						result.put("userid", user.getUserId());
+						result.put("password", user.getPassword());
+						result.put("email", user.getEmailId());
+						result.put("tags", user.getTags());
 						return ok(result);
 					} else {
 						return unauthorized("password incorrect");
